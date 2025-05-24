@@ -13,7 +13,7 @@ export default function Account() {
       </div>
 
       {/* 主内容 */}
-      <div className="flex-fill p-4">
+      <div className="flex-fill p-4" style={{ marginLeft: "120px" }}>
         <Routes>
           <Route path="/" element={<Navigate to="Signin" />} />
           <Route path="Signin" element={<Signin />} />
