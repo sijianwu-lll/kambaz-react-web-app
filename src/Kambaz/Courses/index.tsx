@@ -3,19 +3,27 @@ import Modules from "./Modules";
 import Home from "./Home";
 import Assignments from "./Assignments";
 import AssignmentEditor from "./Assignments/Editor";
-import { Navigate, Route, Routes } from "react-router";
 import PeopleTable from "./People/Table";
+import { Navigate, Route, Routes, useParams, useLocation } from "react-router-dom";
+import { courses } from "../Database";
+import { FaAlignJustify } from "react-icons/fa6";
 
 export default function Courses() {
+  const { cid } = useParams();
+  const { pathname } = useLocation();
+  const course = courses.find((course) => course._id === cid);
+  const currentPage = pathname.split("/")[4] || "Home";
+
   return (
     <div id="wd-courses">
       <h2 className="text-danger">
-        Course 1234
+        <FaAlignJustify className="me-4 fs-4 mb-1" />
+        {course?.name} &gt; {currentPage}
       </h2>
       <hr />
 
       <div className="d-flex">
-        {/* 左侧导航栏，md以下隐藏 */}
+        {/* 左侧导航栏 */}
         <div className="d-none d-md-block">
           <CourseNavigation />
         </div>
@@ -29,7 +37,6 @@ export default function Courses() {
             <Route path="Assignments" element={<Assignments />} />
             <Route path="Assignments/:aid" element={<AssignmentEditor />} />
             <Route path="People" element={<PeopleTable />} />
-
           </Routes>
         </div>
       </div>

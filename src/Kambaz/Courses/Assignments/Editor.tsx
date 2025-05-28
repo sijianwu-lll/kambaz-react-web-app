@@ -1,56 +1,53 @@
-import { Form, Button, Row, Col } from "react-bootstrap";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
+import * as db from "../../Database"; 
+
+import { Button, Form, FloatingLabel } from "react-bootstrap";
 
 export default function AssignmentEditor() {
-  const { aid } = useParams(); // 从 URL 中获取 A1 / A2 等作业 ID
+  const { cid, aid } = useParams();
+  const assignment = db.assignments.find((a) => a._id === aid);
+
+  if (!assignment) {
+    return <h3>Assignment not found</h3>;
+  }
 
   return (
-    <div id="wd-assignment-editor" className="p-3">
-      <h2 className="mb-4">Edit Assignment</h2>
-      <h4 className="text-muted">Editing: {aid}</h4>
+    <div id="wd-assignment-editor">
+      <h3>Editing: {assignment.title}</h3>
 
       <Form>
-        {/* Assignment Name */}
-        <Form.Group className="mb-3" controlId="assignmentName">
-          <Form.Label>Assignment Name</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter assignment name"
-            defaultValue={`${aid} - Assignment Title`}
-            size="lg"
-          />
-        </Form.Group>
+        {/* Assignment Title */}
+        <FloatingLabel label="Assignment Title" className="mb-3">
+          <Form.Control type="text" defaultValue={assignment.title} />
+        </FloatingLabel>
 
-        {/* Description */}
-        <Form.Group className="mb-3" controlId="assignmentDescription">
-          <Form.Label>Description</Form.Label>
+        {/* Assignment Description */}
+        <FloatingLabel label="Description" className="mb-3">
           <Form.Control
             as="textarea"
-            rows={5}
-            placeholder="Enter description here"
-            defaultValue="This is the assignment description."
+            defaultValue={assignment.description}
+            style={{ height: "150px" }}
           />
-        </Form.Group>
+        </FloatingLabel>
 
         {/* Points */}
-        <Form.Group as={Row} className="mb-3" controlId="assignmentPoints">
-          <Form.Label column sm={2}>Points</Form.Label>
-          <Col sm={10}>
-            <Form.Control type="number" defaultValue={100} />
-          </Col>
-        </Form.Group>
+        <FloatingLabel label="Points" className="mb-3">
+          <Form.Control type="number" defaultValue={assignment.points || 100} />
+        </FloatingLabel>
 
         {/* Due Date */}
-        <Form.Group as={Row} className="mb-3" controlId="assignmentDueDate">
-          <Form.Label column sm={2}>Due Date</Form.Label>
-          <Col sm={10}>
-            <Form.Control type="date" defaultValue="2025-10-03" />
-          </Col>
-        </Form.Group>
+        <FloatingLabel label="Due Date" className="mb-3">
+          <Form.Control type="date" defaultValue={assignment.due} />
+        </FloatingLabel>
 
-        {/* Save Button */}
-        <div className="d-flex justify-content-end">
-          <Button variant="primary" size="lg">Save</Button>
+        {/* Buttons */}
+        <div className="d-flex justify-content-end gap-2 mt-3">
+          <Link to={`/Kambaz/Courses/${cid}/Assignments`}>
+            <Button variant="secondary">Cancel</Button>
+          </Link>
+          <Link to={`/Kambaz/Courses/${cid}/Assignments`}>
+            <Button variant="danger">Save</Button>
+          </Link>
         </div>
       </Form>
     </div>
