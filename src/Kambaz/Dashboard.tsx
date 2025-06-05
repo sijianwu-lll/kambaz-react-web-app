@@ -156,25 +156,23 @@ export default function Dashboard() {
                           size="sm"
                           variant="danger"
                           onClick={() =>
-                            dispatch(
-                              unenrollCourse({ user: currentUser._id, course: c._id })
-                            )
+                            dispatch(unenroll({ user: currentUser._id, course: c._id }))
                           }
                         >
-                          Unenroll
+                           Unenroll
                         </Button>
+
                       ) : (
                         <Button
                           size="sm"
                           variant="success"
                           onClick={() =>
-                            dispatch(
-                              enrollCourse({ user: currentUser._id, course: c._id })
-                            )
+                          dispatch(enroll({ user: currentUser._id, course: c._id }))
                           }
                         >
-                          Enroll
+                            Enroll
                         </Button>
+
                       )
                     )}
 
