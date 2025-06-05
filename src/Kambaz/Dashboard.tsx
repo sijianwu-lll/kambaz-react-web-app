@@ -8,6 +8,8 @@ import {
   updateCourse,
   setSelectedCourse,
 } from "./Courses/reducer";
+import { enroll, unenroll } from "./Courses/Enrollments/reducer";
+
 
 export default function Dashboard() {
   const dispatch = useDispatch();
@@ -18,27 +20,45 @@ export default function Dashboard() {
   const selectedCourse = useSelector((state: any) => state.coursesReducer.selectedCourse);
   const enrollments = useSelector((state: any) => state.enrollmentsReducer?.enrollments || []);
 
-  // ✅ 安全初始化，避免 null 错误
   const [formCourse, setFormCourse] = useState<any>(
     selectedCourse ?? { _id: "", name: "", description: "" }
   );
+  const [showAllCourses, setShowAllCourses] = useState(false);
 
-  // ✅ 当选中课程变化时，更新本地表单状态
   useEffect(() => {
     if (selectedCourse) {
       setFormCourse(selectedCourse);
     }
   }, [selectedCourse]);
 
-  const filteredCourses = courses.filter((c: any) =>
-    enrollments.some((e: any) => e.user === currentUser?._id && e.course === c._id)
-  );
+  const visibleCourses = showAllCourses
+    ? courses
+    : courses.filter((c: any) =>
+        enrollments.some(
+          (e: any) => e.user === currentUser?._id && e.course === c._id
+        )
+      );
+
+  const isEnrolled = (courseId: string) =>
+    enrollments.some(
+      (e: any) => e.user === currentUser?._id && e.course === courseId
+    );
 
   return (
     <div id="wd-dashboard" className="ms-md-4 mt-3 me-3">
       <h1 id="wd-dashboard-title">Dashboard</h1>
       <hr />
 
+      {/* 切换查看全部/只看自己 */}
+      <Button
+        className="float-end mb-3"
+        variant="info"
+        onClick={() => setShowAllCourses(!showAllCourses)}
+      >
+        {showAllCourses ? "Show Enrolled Courses" : "Show All Courses"}
+      </Button>
+
+      {/* 添加/编辑课程（仅 FACULTY） */}
       {isFaculty && (
         <>
           <h5>
@@ -67,7 +87,9 @@ export default function Dashboard() {
             className="mb-2"
             placeholder="Course Name"
             value={formCourse.name}
-            onChange={(e) => setFormCourse({ ...formCourse, name: e.target.value })}
+            onChange={(e) =>
+              setFormCourse({ ...formCourse, name: e.target.value })
+            }
           />
           <FormControl
             className="mb-3"
@@ -75,23 +97,25 @@ export default function Dashboard() {
             rows={3}
             placeholder="Course Description"
             value={formCourse.description}
-            onChange={(e) => setFormCourse({ ...formCourse, description: e.target.value })}
+            onChange={(e) =>
+              setFormCourse({ ...formCourse, description: e.target.value })
+            }
           />
         </>
       )}
 
       <h2 id="wd-dashboard-published">
-        Published Courses ({filteredCourses.length})
+        Published Courses ({visibleCourses.length})
       </h2>
       <hr />
 
       <div id="wd-dashboard-courses">
         <Row xs={1} sm={2} md={3} lg={4} className="g-4 mt-3">
-          {filteredCourses.map((c: any) => (
+          {visibleCourses.map((c: any) => (
             <Col key={c._id} style={{ width: "260px" }}>
               <Card className="h-100 wd-dashboard-course">
                 <Link
-                  to={`/Kambaz/Courses/${c._id}/Home`}
+                  to={isEnrolled(c._id) ? `/Kambaz/Courses/${c._id}/Home` : "#"}
                   className="wd-dashboard-course-link text-decoration-none text-dark"
                 >
                   <Card.Img
@@ -113,39 +137,74 @@ export default function Dashboard() {
                   </Card.Text>
                 </Card.Body>
 
-                <Card.Footer className="d-flex justify-content-between">
-                  <Link
-                    to={`/Kambaz/Courses/${c._id}/Home`}
-                    className="btn btn-primary"
-                  >
-                    Go
-                  </Link>
-                  {isFaculty && (
-                    <div className="d-flex gap-2">
-                      <Button
-                        variant="warning"
-                        size="sm"
-                        id="wd-edit-course-click"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          dispatch(setSelectedCourse(c));
-                        }}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        id="wd-delete-course-click"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          dispatch(deleteCourse(c._id));
-                        }}
-                      >
-                        Delete
-                      </Button>
-                    </div>
+                <Card.Footer className="d-flex justify-content-between align-items-center">
+                  {isEnrolled(c._id) ? (
+                    <Link
+                      to={`/Kambaz/Courses/${c._id}/Home`}
+                      className="btn btn-primary"
+                    >
+                      Go
+                    </Link>
+                  ) : (
+                    <span className="text-muted">Not enrolled</span>
                   )}
+
+                  <div className="d-flex gap-2">
+                    {showAllCourses && (
+                      isEnrolled(c._id) ? (
+                        <Button
+                          size="sm"
+                          variant="danger"
+                          onClick={() =>
+                            dispatch(
+                              unenrollCourse({ user: currentUser._id, course: c._id })
+                            )
+                          }
+                        >
+                          Unenroll
+                        </Button>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="success"
+                          onClick={() =>
+                            dispatch(
+                              enrollCourse({ user: currentUser._id, course: c._id })
+                            )
+                          }
+                        >
+                          Enroll
+                        </Button>
+                      )
+                    )}
+
+                    {isFaculty && (
+                      <>
+                        <Button
+                          variant="warning"
+                          size="sm"
+                          id="wd-edit-course-click"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            dispatch(setSelectedCourse(c));
+                          }}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          id="wd-delete-course-click"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            dispatch(deleteCourse(c._id));
+                          }}
+                        >
+                          Delete
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </Card.Footer>
               </Card>
             </Col>

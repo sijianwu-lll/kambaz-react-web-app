@@ -12,11 +12,21 @@ export default function Courses() {
   const { cid } = useParams();
   const { pathname } = useLocation();
 
-  // ✅ 从 Redux 获取课程列表
   const courses = useSelector((state: any) => state.coursesReducer.courses);
-  const course = courses.find((course: any) => course._id === cid);
+  const enrollments = useSelector((state: any) => state.enrollmentsReducer.enrollments);
+  const currentUser = useSelector((state: any) => state.accountReducer.currentUser);
 
+  const course = courses.find((course: any) => course._id === cid);
   const currentPage = pathname.split("/")[4] || "Home";
+
+  // ✅ 验证用户是否已报名该课程
+  const isEnrolled = enrollments.some(
+    (e: any) => e.user === currentUser?._id && e.course === cid
+  );
+
+  if (!isEnrolled) {
+    return <Navigate to="/Kambaz/Dashboard" />;
+  }
 
   return (
     <div id="wd-courses">
@@ -27,12 +37,10 @@ export default function Courses() {
       <hr />
 
       <div className="d-flex">
-        {/* 左侧导航栏 */}
         <div className="d-none d-md-block">
           <CourseNavigation />
         </div>
 
-        {/* 右侧主内容区域 */}
         <div className="flex-fill">
           <Routes>
             <Route path="/" element={<Navigate to="Home" />} />

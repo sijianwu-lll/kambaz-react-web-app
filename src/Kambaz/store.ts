@@ -3,7 +3,8 @@ import modulesReducer from "./Courses/Modules/reducer";
 import assignmentsReducer from "./Courses/Assignments/reducer";
 import coursesReducer from "./Courses/reducer";
 import accountReducer from "./Account/reducer";
-import enrollmentsReducer from "./Enrollments/reducer";
+import enrollmentsReducer from "./Courses/Enrollments/reducer";
+
 
 const store = configureStore({
   reducer: {
@@ -11,7 +12,7 @@ const store = configureStore({
     assignmentsReducer,
     coursesReducer,
     accountReducer,
-    enrollmentsReducer,
+    enrollmentsReducer, // ✅ 添加到 store
   },
 });
 
