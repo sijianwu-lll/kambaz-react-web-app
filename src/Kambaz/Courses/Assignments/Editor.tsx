@@ -1,53 +1,110 @@
-import { useParams, Link } from "react-router-dom";
-import * as db from "../../Database"; 
-
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Button, Form, FloatingLabel } from "react-bootstrap";
+import { addAssignment, updateAssignment } from "./reducer";
+import { v4 as uuidv4 } from "uuid";
 
 export default function AssignmentEditor() {
   const { cid, aid } = useParams();
-  const assignment = db.assignments.find((a) => a._id === aid);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  if (!assignment) {
-    return <h3>Assignment not found</h3>;
-  }
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const assignments = useSelector((state: any) => state.assignmentsReducer.assignments);
+
+  const isEditMode = aid !== "new";
+  const original = assignments.find((a: any) => a._id === aid);
+
+  const [assignment, setAssignment] = useState<any>({
+    _id: uuidv4(),
+    course: cid,
+    title: "",
+    description: "",
+    points: 100,
+    due: "",
+    availableFrom: "",
+    availableUntil: ""
+  });
+
+  // 权限控制
+  useEffect(() => {
+    if (!currentUser || currentUser.role !== "FACULTY") {
+      navigate(`/Kambaz/Courses/${cid}/Assignments`);
+    }
+    if (isEditMode && original) {
+      setAssignment(original);
+    }
+  }, []);
+
+  const handleSave = () => {
+    if (isEditMode) {
+      dispatch(updateAssignment(assignment));
+    } else {
+      dispatch(addAssignment(assignment));
+    }
+    navigate(`/Kambaz/Courses/${cid}/Assignments`);
+  };
 
   return (
     <div id="wd-assignment-editor">
-      <h3>Editing: {assignment.title}</h3>
+      <h3>{isEditMode ? `Editing: ${assignment.title}` : "New Assignment"}</h3>
 
       <Form>
-        {/* Assignment Title */}
         <FloatingLabel label="Assignment Title" className="mb-3">
-          <Form.Control type="text" defaultValue={assignment.title} />
-        </FloatingLabel>
-
-        {/* Assignment Description */}
-        <FloatingLabel label="Description" className="mb-3">
           <Form.Control
-            as="textarea"
-            defaultValue={assignment.description}
-            style={{ height: "150px" }}
+            type="text"
+            value={assignment.title}
+            onChange={(e) => setAssignment({ ...assignment, title: e.target.value })}
           />
         </FloatingLabel>
 
-        {/* Points */}
+        <FloatingLabel label="Description" className="mb-3">
+          <Form.Control
+            as="textarea"
+            style={{ height: "150px" }}
+            value={assignment.description}
+            onChange={(e) => setAssignment({ ...assignment, description: e.target.value })}
+          />
+        </FloatingLabel>
+
         <FloatingLabel label="Points" className="mb-3">
-          <Form.Control type="number" defaultValue={assignment.points || 100} />
+          <Form.Control
+            type="number"
+            value={assignment.points}
+            onChange={(e) => setAssignment({ ...assignment, points: e.target.value })}
+          />
         </FloatingLabel>
 
-        {/* Due Date */}
         <FloatingLabel label="Due Date" className="mb-3">
-          <Form.Control type="date" defaultValue={assignment.due} />
+          <Form.Control
+            type="date"
+            value={assignment.due}
+            onChange={(e) => setAssignment({ ...assignment, due: e.target.value })}
+          />
         </FloatingLabel>
 
-        {/* Buttons */}
+        <FloatingLabel label="Available From" className="mb-3">
+          <Form.Control
+            type="date"
+            value={assignment.availableFrom}
+            onChange={(e) => setAssignment({ ...assignment, availableFrom: e.target.value })}
+          />
+        </FloatingLabel>
+
+        <FloatingLabel label="Available Until" className="mb-3">
+          <Form.Control
+            type="date"
+            value={assignment.availableUntil}
+            onChange={(e) => setAssignment({ ...assignment, availableUntil: e.target.value })}
+          />
+        </FloatingLabel>
+
         <div className="d-flex justify-content-end gap-2 mt-3">
           <Link to={`/Kambaz/Courses/${cid}/Assignments`}>
             <Button variant="secondary">Cancel</Button>
           </Link>
-          <Link to={`/Kambaz/Courses/${cid}/Assignments`}>
-            <Button variant="danger">Save</Button>
-          </Link>
+          <Button variant="danger" onClick={handleSave}>Save</Button>
         </div>
       </Form>
     </div>

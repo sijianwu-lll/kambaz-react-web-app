@@ -5,13 +5,17 @@ import Assignments from "./Assignments";
 import AssignmentEditor from "./Assignments/Editor";
 import PeopleTable from "./People/Table";
 import { Navigate, Route, Routes, useParams, useLocation } from "react-router-dom";
-import { courses } from "../Database";
 import { FaAlignJustify } from "react-icons/fa6";
+import { useSelector } from "react-redux";
 
 export default function Courses() {
   const { cid } = useParams();
   const { pathname } = useLocation();
-  const course = courses.find((course) => course._id === cid);
+
+  // ✅ 从 Redux 获取课程列表
+  const courses = useSelector((state: any) => state.coursesReducer.courses);
+  const course = courses.find((course: any) => course._id === cid);
+
   const currentPage = pathname.split("/")[4] || "Home";
 
   return (

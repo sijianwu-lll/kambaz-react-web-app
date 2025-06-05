@@ -3,8 +3,11 @@ import AccountNavigation from "./Navigation";
 import Signin from "./Signin";
 import Signup from "./Signup";
 import Profile from "./Profile";
+import { useSelector } from "react-redux";
 
 export default function Account() {
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
+
   return (
     <div className="d-flex">
       {/* 左侧导航栏 */}
@@ -15,10 +18,18 @@ export default function Account() {
       {/* 主内容 */}
       <div className="flex-fill p-4" style={{ marginLeft: "120px" }}>
         <Routes>
-          <Route path="/" element={<Navigate to="Signin" />} />
-          <Route path="Signin" element={<Signin />} />
-          <Route path="Signup" element={<Signup />} />
-          <Route path="Profile" element={<Profile />} />
+          {/* ✅ 根据登录状态跳转默认页面 */}
+          <Route
+            path="/"
+            element={
+              <Navigate
+                to={currentUser ? "/Kambaz/Account/Profile" : "/Kambaz/Account/Signin"}
+              />
+            }
+          />
+          <Route path="/Signin" element={<Signin />} />
+          <Route path="/Signup" element={<Signup />} />
+          <Route path="/Profile" element={<Profile />} />
         </Routes>
       </div>
     </div>
