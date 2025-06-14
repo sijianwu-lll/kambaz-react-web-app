@@ -23,5 +23,5 @@
     "esModuleInterop": true,
     "resolveJsonModule": true
   },
-  "include": ["src"]
+  "include": ["src", "server/Lab5"]
 }
