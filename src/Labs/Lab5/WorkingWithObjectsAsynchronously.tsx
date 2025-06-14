@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FormControl } from "react-bootstrap";
 import * as client from "./client";
 
@@ -26,18 +26,24 @@ export default function WorkingWithObjectsAsynchronously() {
       <FormControl
         className="mb-2"
         value={assignment.title || ""}
-        onChange={(e) => setAssignment({ ...assignment, title: e.target.value })}
+        onChange={(e) =>
+          setAssignment({ ...assignment, title: e.target.value })
+        }
       />
       <FormControl
         className="mb-2"
         value={assignment.description || ""}
-        onChange={(e) => setAssignment({ ...assignment, description: e.target.value })}
+        onChange={(e) =>
+          setAssignment({ ...assignment, description: e.target.value })
+        }
       />
       <FormControl
         className="mb-2"
         type="date"
         value={assignment.due || ""}
-        onChange={(e) => setAssignment({ ...assignment, due: e.target.value })}
+        onChange={(e) =>
+          setAssignment({ ...assignment, due: e.target.value })
+        }
       />
       <div className="form-check form-switch mb-2">
         <input
@@ -45,13 +51,18 @@ export default function WorkingWithObjectsAsynchronously() {
           type="checkbox"
           id="wd-completed"
           checked={assignment.completed || false}
-          onChange={(e) => setAssignment({ ...assignment, completed: e.target.checked })}
+          onChange={(e) =>
+            setAssignment({ ...assignment, completed: e.target.checked })
+          }
         />
         <label className="form-check-label" htmlFor="wd-completed">
           Completed
         </label>
       </div>
-      <button className="btn btn-primary" onClick={() => updateTitle(assignment.title)}>
+      <button
+        className="btn btn-primary"
+        onClick={() => updateTitle(assignment.title)}
+      >
         Update Title
       </button>
       <pre>{JSON.stringify(assignment, null, 2)}</pre>
