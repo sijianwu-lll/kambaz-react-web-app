@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ListGroup, FormControl } from "react-bootstrap";
 import { BsGripVertical } from "react-icons/bs";
 import ModuleControlButtons from "./ModuleControlButtons";
@@ -10,8 +10,11 @@ import {
   deleteModule,
   editModule,
   updateModule,
+  setModules,
 } from "./reducer.ts";
 import { useDispatch, useSelector } from "react-redux";
+import * as coursesClient from "../client";         // ✅ 获取模块 & 创建模块 API
+import * as modulesClient from "./client";         // ✅ 删除模块 API
 
 export default function Modules() {
   const { cid } = useParams();
@@ -23,16 +26,38 @@ export default function Modules() {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const isFaculty = currentUser?.role === "FACULTY";
 
+  // ✅ 加载课程模块（首次加载）
+  useEffect(() => {
+    const fetchModules = async () => {
+      if (!cid) return;
+      const serverModules = await coursesClient.findModulesForCourse(cid);
+      dispatch(setModules(serverModules));
+    };
+    fetchModules();
+  }, [cid]);
+
+  // ✅ 提交新模块
+  const createModuleForCourse = async () => {
+    if (!cid || !moduleName.trim()) return;
+    const newModule = { name: moduleName };
+    const created = await coursesClient.createModuleForCourse(cid, newModule);
+    dispatch(addModule(created));
+    setModuleName("");
+  };
+
+  // ✅ 删除模块（前端调后端，然后同步 Redux）
+  const removeModule = async (moduleId: string) => {
+    await modulesClient.deleteModule(moduleId);
+    dispatch(deleteModule(moduleId));
+  };
+
   return (
     <div>
       {isFaculty && (
         <ModulesControls
           moduleName={moduleName}
           setModuleName={setModuleName}
-          addModule={() => {
-            dispatch(addModule({ name: moduleName, course: cid }));
-            setModuleName("");
-          }}
+          addModule={createModuleForCourse}
         />
       )}
 
@@ -64,7 +89,7 @@ export default function Modules() {
               {isFaculty && (
                 <ModuleControlButtons
                   moduleId={module._id}
-                  deleteModule={(id) => dispatch(deleteModule(id))}
+                  deleteModule={removeModule}                // ✅ 改为真实删除逻辑
                   editModule={(id) => dispatch(editModule(id))}
                 />
               )}

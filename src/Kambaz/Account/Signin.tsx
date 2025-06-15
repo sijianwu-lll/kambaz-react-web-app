@@ -3,23 +3,26 @@ import { Link, useNavigate } from "react-router-dom";
 import { FormControl, Button } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import { setCurrentUser } from "./reducer";
-import { users } from "../Database";  // ✅ 正确解构导入 users
+import * as client from "./client";  // ✅ 使用 REST API 调用后端
 
 export default function Signin() {
   const [credentials, setCredentials] = useState<any>({});
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const signin = () => {
-    const user = users.find(
-      (u: any) =>
-        u.username === credentials.username &&
-        u.password === credentials.password
-    );
-    if (!user) return; // 登录失败不处理
-
-    dispatch(setCurrentUser(user)); // 写入 Redux
-    navigate("/Kambaz/Dashboard"); // 成功后跳转
+  const signin = async () => {
+    try {
+      const user = await client.signin(credentials);  // ✅ 调用真实接口
+      if (!user || !user._id) {
+        alert("Invalid credentials");
+        return;
+      }
+      dispatch(setCurrentUser(user));
+      navigate("/Kambaz/Dashboard");
+    } catch (e) {
+      console.error("Sign in error", e);
+      alert("Server error or invalid credentials");
+    }
   };
 
   return (
