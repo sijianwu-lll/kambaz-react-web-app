@@ -13,8 +13,8 @@ import {
   setModules,
 } from "./reducer.ts";
 import { useDispatch, useSelector } from "react-redux";
-import * as coursesClient from "../client";         // ✅ 获取模块 & 创建模块 API
-import * as modulesClient from "./client";         // ✅ 删除模块 API
+import * as coursesClient from "../client";
+import * as modulesClient from "./client";
 
 export default function Modules() {
   const { cid } = useParams();
@@ -26,7 +26,6 @@ export default function Modules() {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const isFaculty = currentUser?.role === "FACULTY";
 
-  // ✅ 加载课程模块（首次加载）
   useEffect(() => {
     const fetchModules = async () => {
       if (!cid) return;
@@ -36,7 +35,6 @@ export default function Modules() {
     fetchModules();
   }, [cid]);
 
-  // ✅ 提交新模块
   const createModuleForCourse = async () => {
     if (!cid || !moduleName.trim()) return;
     const newModule = { name: moduleName };
@@ -45,10 +43,15 @@ export default function Modules() {
     setModuleName("");
   };
 
-  // ✅ 删除模块（前端调后端，然后同步 Redux）
   const removeModule = async (moduleId: string) => {
     await modulesClient.deleteModule(moduleId);
     dispatch(deleteModule(moduleId));
+  };
+
+  const saveModule = async (module: any) => {
+    const updated = { ...module, editing: false };
+    await modulesClient.updateModule(updated);          // ✅ 调用后端更新
+    dispatch(updateModule(updated));                    // ✅ 同步 Redux 状态
   };
 
   return (
@@ -80,7 +83,7 @@ export default function Modules() {
                     }
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
-                        dispatch(updateModule({ ...module, editing: false }));
+                        saveModule(module);   // ✅ 触发保存
                       }
                     }}
                   />
@@ -89,7 +92,7 @@ export default function Modules() {
               {isFaculty && (
                 <ModuleControlButtons
                   moduleId={module._id}
-                  deleteModule={removeModule}                // ✅ 改为真实删除逻辑
+                  deleteModule={removeModule}
                   editModule={(id) => dispatch(editModule(id))}
                 />
               )}

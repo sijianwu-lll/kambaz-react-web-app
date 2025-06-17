@@ -20,3 +20,15 @@ export function deleteModule(moduleId) {
   Database.modules = modules.filter((module) => module._id !== moduleId);
   return 204;
 }
+
+// ✅ 更新指定模块
+export function updateModule(moduleId, moduleUpdates) {
+  const { modules } = Database;
+  const module = modules.find((m) => m._id === moduleId);
+  if (module) {
+    Object.assign(module, moduleUpdates);
+    return 204;
+  } else {
+    return 404;
+  }
+}

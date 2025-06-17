@@ -115,4 +115,4 @@ export default [
       "course": "RS103"
     }
   
-]
+];

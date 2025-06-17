@@ -1,28 +1,29 @@
-// server/Kambaz/Database/Users/routes.js
-
 import * as dao from "./dao.js";
 import * as courseDao from "../Courses/dao.js";
 import * as enrollmentsDao from "../Enrollments/dao.js";  // ✅ 新增导入
 
 export default function UserRoutes(app) {
-  // ✅ 登录
+  // ✅ 登录（使用 session.regenerate 修复多用户身份问题）
   const signin = (req, res) => {
-    try {
-      const { username, password } = req.body;
-      console.log("🛂 Signin attempt:", { username, password });
+    const { username, password } = req.body;
+    console.log("🛂 Signin attempt:", { username, password });
 
-      const user = dao.findUserByCredentials(username, password);
-      if (user) {
-        req.session.currentUser = user;
-        console.log("🎯 Logged in:", user);
-        res.json(user);
-      } else {
-        res.status(401).send("Invalid credentials");
-      }
-    } catch (e) {
-      console.error("❌ Signin error:", e);
-      res.status(500).send("Server error");
+    const user = dao.findUserByCredentials(username, password);
+    if (!user) {
+      res.status(401).send("Invalid credentials");
+      return;
     }
+
+    req.session.regenerate((err) => {
+      if (err) {
+        console.error("❌ Session regenerate failed:", err);
+        res.sendStatus(500);
+        return;
+      }
+      req.session.currentUser = user;
+      console.log("✅ New session created for:", user.username);
+      res.json(user);
+    });
   };
 
   // ✅ 注册

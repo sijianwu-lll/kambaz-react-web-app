@@ -2,10 +2,16 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { ListGroup, Button } from "react-bootstrap";
 import { FaGripVertical } from "react-icons/fa6";
 import { useSelector, useDispatch } from "react-redux";
-import { deleteAssignment } from "./reducer";
+import { useEffect } from "react";
+
+import {
+  setAssignments,
+  deleteAssignment as deleteAssignmentRedux,
+} from "./reducer";
+import * as client from "./client";
 
 export default function Assignments() {
-  const { cid } = useParams();
+  const { cid } = useParams(); // ✅ 获取课程 ID
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -15,13 +21,27 @@ export default function Assignments() {
   const assignments = useSelector(
     (state: any) => state.assignmentsReducer.assignments
   );
+
+  // ✅ 仅显示当前课程的作业
   const courseAssignments = assignments.filter((a: any) => a.course === cid);
 
-  const handleDelete = (id: string) => {
+  // ✅ 从服务器获取该课程的作业数据
+  const fetchAssignments = async () => {
+    if (!cid) return;
+    const serverAssignments = await client.findAssignmentsForCourse(cid);
+    dispatch(setAssignments(serverAssignments));
+  };
+
+  const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this assignment?")) {
-      dispatch(deleteAssignment(id));
+      await client.deleteAssignment(id);
+      dispatch(deleteAssignmentRedux(id));
     }
   };
+
+  useEffect(() => {
+    fetchAssignments();
+  }, [cid]);
 
   return (
     <div id="wd-assignments">

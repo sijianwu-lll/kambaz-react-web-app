@@ -2,11 +2,15 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Form, FloatingLabel } from "react-bootstrap";
-import { addAssignment, updateAssignment } from "./reducer";
+import {
+  addAssignment,
+  updateAssignment as updateAssignmentRedux,
+} from "./reducer";
+import * as client from "./client";
 import { v4 as uuidv4 } from "uuid";
 
 export default function AssignmentEditor() {
-  const { cid, aid } = useParams();
+  const { cid, aid } = useParams(); // ✅ 删除 mid
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -24,10 +28,9 @@ export default function AssignmentEditor() {
     points: 100,
     due: "",
     availableFrom: "",
-    availableUntil: ""
+    availableUntil: "",
   });
 
-  // 权限控制
   useEffect(() => {
     if (!currentUser || currentUser.role !== "FACULTY") {
       navigate(`/Kambaz/Courses/${cid}/Assignments`);
@@ -35,13 +38,15 @@ export default function AssignmentEditor() {
     if (isEditMode && original) {
       setAssignment(original);
     }
-  }, []);
+  }, [aid, currentUser, original]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (isEditMode) {
-      dispatch(updateAssignment(assignment));
+      await client.updateAssignment(assignment);
+      dispatch(updateAssignmentRedux(assignment));
     } else {
-      dispatch(addAssignment(assignment));
+      const created = await client.createAssignment(assignment);
+      dispatch(addAssignment(created));
     }
     navigate(`/Kambaz/Courses/${cid}/Assignments`);
   };
@@ -72,7 +77,9 @@ export default function AssignmentEditor() {
           <Form.Control
             type="number"
             value={assignment.points}
-            onChange={(e) => setAssignment({ ...assignment, points: e.target.value })}
+            onChange={(e) =>
+              setAssignment({ ...assignment, points: Number(e.target.value) })
+            }
           />
         </FloatingLabel>
 
@@ -88,7 +95,9 @@ export default function AssignmentEditor() {
           <Form.Control
             type="date"
             value={assignment.availableFrom}
-            onChange={(e) => setAssignment({ ...assignment, availableFrom: e.target.value })}
+            onChange={(e) =>
+              setAssignment({ ...assignment, availableFrom: e.target.value })
+            }
           />
         </FloatingLabel>
 
@@ -96,7 +105,9 @@ export default function AssignmentEditor() {
           <Form.Control
             type="date"
             value={assignment.availableUntil}
-            onChange={(e) => setAssignment({ ...assignment, availableUntil: e.target.value })}
+            onChange={(e) =>
+              setAssignment({ ...assignment, availableUntil: e.target.value })
+            }
           />
         </FloatingLabel>
 
@@ -104,7 +115,9 @@ export default function AssignmentEditor() {
           <Link to={`/Kambaz/Courses/${cid}/Assignments`}>
             <Button variant="secondary">Cancel</Button>
           </Link>
-          <Button variant="danger" onClick={handleSave}>Save</Button>
+          <Button variant="danger" onClick={handleSave}>
+            Save
+          </Button>
         </div>
       </Form>
     </div>

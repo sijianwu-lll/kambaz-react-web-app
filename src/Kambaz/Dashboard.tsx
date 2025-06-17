@@ -1,7 +1,13 @@
-import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { Row, Col, Card, Button, FormControl } from "react-bootstrap";
+import {
+  enroll,
+  unenroll,
+} from "./Courses/Enrollments/reducer";
+import * as enrollmentsClient from "./Courses/Enrollments/client";
+
 
 type DashboardProps = {
   course: { _id?: string; name: string; description: string };
@@ -21,9 +27,34 @@ export default function Dashboard({
   deleteCourse,
   courses,
 }: DashboardProps) {
+  const dispatch = useDispatch();
   const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const enrollments = useSelector((state: any) => state.enrollmentsReducer.enrollments);
   const isFaculty = currentUser?.role === "FACULTY";
   const [showAllCourses, setShowAllCourses] = useState(false);
+
+  useEffect(() => {
+    const fetchEnrollments = async () => {
+      if (!currentUser) return;
+      const userEnrollments = await enrollmentsClient.findCoursesForUser(currentUser._id);
+      userEnrollments.forEach((e: any) => dispatch(enroll(e)));
+    };
+    fetchEnrollments();
+  }, [currentUser]);
+
+  const toggleEnrollment = async (courseId: string) => {
+    if (!currentUser) return;
+    const enrolled = enrollments.some(
+      (e: any) => e.user === currentUser._id && e.course === courseId
+    );
+    if (enrolled) {
+      await enrollmentsClient.unenroll(currentUser._id, courseId);
+      dispatch(unenroll({ user: currentUser._id, course: courseId }));
+    } else {
+      const e = await enrollmentsClient.enroll(currentUser._id, courseId);
+      dispatch(enroll(e));
+    }
+  };
 
   return (
     <div id="wd-dashboard" className="ms-md-4 mt-3 me-3">
@@ -112,14 +143,14 @@ export default function Dashboard({
                     Go
                   </Link>
 
-                  {isFaculty && (
+                  {isFaculty ? (
                     <div className="d-flex gap-2">
                       <Button
                         variant="warning"
                         size="sm"
                         onClick={(e) => {
                           e.preventDefault();
-                          setCourse(c); // ✅ 进入编辑状态
+                          setCourse(c);
                         }}
                       >
                         Edit
@@ -135,6 +166,26 @@ export default function Dashboard({
                         Delete
                       </Button>
                     </div>
+                  ) : (
+                    <Button
+                      variant={
+                        enrollments.some(
+                          (e: any) => e.user === currentUser._id && e.course === c._id
+                        )
+                          ? "danger"
+                          : "success"
+                      }
+                      onClick={(e) => {
+                        e.preventDefault();
+                        toggleEnrollment(c._id);
+                      }}
+                    >
+                      {enrollments.some(
+                        (e: any) => e.user === currentUser._id && e.course === c._id
+                      )
+                        ? "Unenroll"
+                        : "Enroll"}
+                    </Button>
                   )}
                 </Card.Footer>
               </Card>
