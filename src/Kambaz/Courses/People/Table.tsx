@@ -1,15 +1,24 @@
 import { Table } from "react-bootstrap";
 import { FaUserCircle } from "react-icons/fa";
 import { useParams } from "react-router-dom";
-import * as db from "../../Database";
+import * as db from "../../Database"; // ✅ 保留用于课程 enrollments
 
-export default function PeopleTable() {
+type PeopleTableProps = {
+  users?: any[];
+};
+
+export default function PeopleTable({ users = [] }: PeopleTableProps) {
   const { cid } = useParams();
-  const { users, enrollments } = db;
+  const { enrollments } = db;
 
-  const courseUsers = users.filter((user: any) =>
-    enrollments.some((enroll: any) => enroll.course === cid && enroll.user === user._id)
-  );
+  // ✅ 如果有 cid，则为“课程内”；否则显示所有用户
+  const courseUsers = cid
+    ? users.filter((user: any) =>
+        enrollments.some(
+          (enroll: any) => enroll.course === cid && enroll.user === user._id
+        )
+      )
+    : users;
 
   return (
     <div id="wd-people-table" className="p-3">

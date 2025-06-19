@@ -47,7 +47,12 @@ export const findMyCourses = async () => {
 
 // ✅ 创建课程并自动报名
 export const createCourse = async (course: any) => {
-    const response = await axiosWithCredentials.post(`${USERS_API}/current/courses`, course);
-    return response.data;
-  };
-  
+  const response = await axiosWithCredentials.post(`${USERS_API}/current/courses`, course);
+  return response.data;
+};
+
+// ✅ 获取所有用户（新增功能）
+export const findAllUsers = async () => {
+  const response = await axiosWithCredentials.get(USERS_API);
+  return response.data;
+};

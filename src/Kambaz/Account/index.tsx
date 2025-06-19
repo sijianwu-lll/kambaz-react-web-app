@@ -4,6 +4,7 @@ import Signin from "./Signin";
 import Signup from "./Signup";
 import Profile from "./Profile";
 import { useSelector } from "react-redux";
+import Users from "./Users"; // ✅ 新增导入
 
 export default function Account() {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
@@ -30,6 +31,7 @@ export default function Account() {
           <Route path="/Signin" element={<Signin />} />
           <Route path="/Signup" element={<Signup />} />
           <Route path="/Profile" element={<Profile />} />
+          <Route path="/Users" element={<Users />} /> {/* ✅ 新增路由 */}
         </Routes>
       </div>
     </div>

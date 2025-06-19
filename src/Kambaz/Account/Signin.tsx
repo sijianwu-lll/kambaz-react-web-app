@@ -12,11 +12,15 @@ export default function Signin() {
 
   const signin = async () => {
     try {
-      const user = await client.signin(credentials);  // ✅ 调用真实接口
-      if (!user || !user._id) {
+      const user = await client.signin(credentials);
+      console.log("✅ Received user:", user);  // ✅ 调试打印查看用户对象
+
+      // ✅ 改进判断：如果有用户名，就认为是合法用户
+      if (!user || !user.username) {
         alert("Invalid credentials");
         return;
       }
+
       dispatch(setCurrentUser(user));
       navigate("/Kambaz/Dashboard");
     } catch (e) {

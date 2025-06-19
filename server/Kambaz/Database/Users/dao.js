@@ -1,31 +1,26 @@
-import db from "../index.js";             // ✅ 修正路径：只回退一层
-import { v4 as uuidv4 } from "uuid";
-console.log("✅ db =", db);
-console.log("✅ Loaded users from db:", db.users);
+// server/Kambaz/Database/Users/dao.js
 
-let { users } = db;
+import model from "./model.js";
 
-export const createUser = (user) => {
-  const newUser = { ...user, _id: uuidv4() };
-  users = [...users, newUser];
-  return newUser;
-};
+// ✅ 创建用户（由 MongoDB 自动生成 _id，除非导入数据中已有）
+export const createUser = (user) => model.create(user);
 
-export const findAllUsers = () => users;
+// ✅ 查找所有用户
+export const findAllUsers = () => model.find();
 
-export const findUserById = (userId) =>
-  users.find((user) => user._id === userId);
+// ✅ 根据 ID 查找
+export const findUserById = (userId) => model.findById(userId);
 
-export const findUserByUsername = (username) =>
-  users.find((user) => user.username === username);
+// ✅ 根据用户名查找
+export const findUserByUsername = (username) => model.findOne({ username });
 
-export const findUserByCredentials = (username, password) =>
-  users.find((user) => user.username === username && user.password === password);
+// ✅ 查找用户名 + 密码匹配（例如登录验证）
+export const findUserByCredentials = async (username, password) =>
+  model.findOne({ username, password });
 
+// ✅ 更新用户
 export const updateUser = (userId, user) =>
-  users = users.map((u) => (u._id === userId ? user : u));
+  model.updateOne({ _id: userId }, { $set: user });
 
-export const deleteUser = (userId) =>
-  users = users.filter((u) => u._id !== userId);
-
-
+// ✅ 删除用户
+export const deleteUser = (userId) => model.deleteOne({ _id: userId });
