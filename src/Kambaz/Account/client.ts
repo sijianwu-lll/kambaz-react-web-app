@@ -51,8 +51,39 @@ export const createCourse = async (course: any) => {
   return response.data;
 };
 
-// ✅ 获取所有用户（新增功能）
+// ✅ 获取所有用户
 export const findAllUsers = async () => {
   const response = await axiosWithCredentials.get(USERS_API);
   return response.data;
 };
+
+// ✅ 根据角色查找用户
+export const findUsersByRole = async (role: string) => {
+  const response = await axiosWithCredentials.get(`${USERS_API}?role=${role}`);
+  return response.data;
+};
+
+// ✅ 根据姓名模糊查找用户（firstName 或 lastName）
+export const findUsersByPartialName = async (name: string) => {
+  const response = await axiosWithCredentials.get(`${USERS_API}?name=${name}`);
+  return response.data;
+};
+
+// ✅ 根据 ID 查找单个用户（用于详情页面）
+export const findUserById = async (id: string) => {
+  const response = await axiosWithCredentials.get(`${USERS_API}/${id}`);
+  return response.data;
+};
+
+// ✅ 根据 ID 删除用户
+export const deleteUser = async (userId: string) => {
+  const response = await axiosWithCredentials.delete(`${USERS_API}/${userId}`);
+  return response.data;
+};
+
+// ✅ 新建用户（管理员用途）
+export const createUser = async (user: any) => {
+  const response = await axiosWithCredentials.post(`${USERS_API}`, user);
+  return response.data;
+};
+

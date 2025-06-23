@@ -29,16 +29,24 @@ export default function Profile() {
     }
   };
 
-  // ✅ 修改后的 signout 函数：包含调用后端 API
   const signout = async () => {
-    await client.signout();                      // 调用后端登出接口
-    dispatch(setCurrentUser(null));              // 清空 Redux 用户状态
-    navigate("/Kambaz/Account/Signin");          // 跳转回登录页
+    await client.signout();
+    dispatch(setCurrentUser(null));
+    navigate("/Kambaz/Account/Signin");
   };
 
   useEffect(() => {
     fetchProfile();
   }, []);
+
+  const formatDate = (date: any) => {
+    if (!date) return "";
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = `${d.getMonth() + 1}`.padStart(2, "0");
+    const day = `${d.getDate()}`.padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
 
   return (
     <div className="wd-profile-screen" style={{ maxWidth: 480 }}>
@@ -49,7 +57,7 @@ export default function Profile() {
             id="wd-username"
             className="mb-2"
             placeholder="Username"
-            value={profile.username}
+            value={profile.username || ""}
             onChange={(e) =>
               setProfile({ ...profile, username: e.target.value })
             }
@@ -59,7 +67,7 @@ export default function Profile() {
             className="mb-2"
             type="password"
             placeholder="Password"
-            value={profile.password}
+            value={profile.password || ""}
             onChange={(e) =>
               setProfile({ ...profile, password: e.target.value })
             }
@@ -86,21 +94,27 @@ export default function Profile() {
             id="wd-dob"
             className="mb-2"
             type="date"
-            value={profile.dob || ""}
-            onChange={(e) => setProfile({ ...profile, dob: e.target.value })}
+            value={formatDate(profile.dob)}
+            onChange={(e) =>
+              setProfile({ ...profile, dob: e.target.value })
+            }
           />
           <FormControl
             id="wd-email"
             className="mb-2"
             placeholder="Email"
             value={profile.email || ""}
-            onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+            onChange={(e) =>
+              setProfile({ ...profile, email: e.target.value })
+            }
           />
           <select
             id="wd-role"
             className="form-control mb-3"
             value={profile.role || "USER"}
-            onChange={(e) => setProfile({ ...profile, role: e.target.value })}
+            onChange={(e) =>
+              setProfile({ ...profile, role: e.target.value })
+            }
           >
             <option value="USER">User</option>
             <option value="ADMIN">Admin</option>

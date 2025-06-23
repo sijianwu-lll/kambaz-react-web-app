@@ -11,7 +11,15 @@ export default function Signup() {
     email: "",
     password: "",
     confirmPassword: "",
+    firstName: "",
+    lastName: "",
+    dob: "2000-01-01", // 默认合法格式
+    role: "USER",
+    loginId: "N/A",
+    section: "S101",
+    totalActivity: "00:00:00",
   });
+
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -29,7 +37,9 @@ export default function Signup() {
     }
 
     try {
-      const currentUser = await client.signup(user);
+      const payload = { ...user };
+      delete payload.confirmPassword;
+      const currentUser = await client.signup(payload);
       dispatch(setCurrentUser(currentUser));
       navigate("/Kambaz/Account/Profile");
     } catch (e: any) {
@@ -38,7 +48,7 @@ export default function Signup() {
   };
 
   return (
-    <div id="wd-signup-screen" className="p-4" style={{ maxWidth: 400 }}>
+    <div id="wd-signup-screen" className="p-4" style={{ maxWidth: 500 }}>
       <h2 className="mb-4">Sign up</h2>
 
       {error && <div className="alert alert-danger">{error}</div>}
@@ -71,10 +81,40 @@ export default function Signup() {
         placeholder="Confirm Password"
         className="mb-3"
         value={user.confirmPassword}
-        onChange={(e) =>
-          setUser({ ...user, confirmPassword: e.target.value })
-        }
+        onChange={(e) => setUser({ ...user, confirmPassword: e.target.value })}
       />
+
+      <Form.Control
+        placeholder="First Name"
+        className="mb-3"
+        value={user.firstName}
+        onChange={(e) => setUser({ ...user, firstName: e.target.value })}
+      />
+
+      <Form.Control
+        placeholder="Last Name"
+        className="mb-3"
+        value={user.lastName}
+        onChange={(e) => setUser({ ...user, lastName: e.target.value })}
+      />
+
+      <Form.Control
+        type="date"
+        className="mb-3"
+        value={user.dob}
+        onChange={(e) => setUser({ ...user, dob: e.target.value })}
+      />
+
+      <Form.Select
+        className="mb-3"
+        value={user.role}
+        onChange={(e) => setUser({ ...user, role: e.target.value })}
+      >
+        <option value="USER">User</option>
+        <option value="ADMIN">Admin</option>
+        <option value="FACULTY">Faculty</option>
+        <option value="STUDENT">Student</option>
+      </Form.Select>
 
       <button onClick={signup} className="btn btn-success w-100 mb-3">
         Create Account

@@ -5,7 +5,7 @@ const ENROLLMENTS_API = `${REMOTE_SERVER}/api/enrollments`;
 
 // ✅ 获取当前用户已报名的课程 ID 列表
 export const findCoursesForUser = async (userId: string) => {
-  const response = await axios.get(`${ENROLLMENTS_API}/${userId}`);
+  const response = await axios.get(`${REMOTE_SERVER}/api/users/${userId}/enrollments`);
   return response.data;
 };
 

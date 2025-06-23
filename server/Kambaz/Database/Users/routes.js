@@ -1,17 +1,41 @@
-// server/Kambaz/Database/Users/routes.js
-
 import * as dao from "./dao.js";
 import * as courseDao from "../Courses/dao.js";
 import * as enrollmentsDao from "../Enrollments/dao.js";
 
 export default function UserRoutes(app) {
-  // ✅ 获取所有用户
+  // ✅ 获取所有用户（支持角色和姓名模糊过滤）
   const findAllUsers = async (req, res) => {
+    const { role, name } = req.query;
+
+    if (role) {
+      const users = await dao.findUsersByRole(role);
+      res.json(users);
+      return;
+    }
+
+    if (name) {
+      const users = await dao.findUsersByPartialName(name);
+      res.json(users);
+      return;
+    }
+
     const users = await dao.findAllUsers();
     res.json(users);
   };
 
-  // ✅ 登录（异步）
+  // ✅ 根据 ID 查找用户
+  const findUserById = async (req, res) => {
+    const user = await dao.findUserById(req.params.userId);
+    res.json(user);
+  };
+
+  // ✅ 创建新用户（用于普通新增，不登录）
+  const createUser = async (req, res) => {
+    const user = await dao.createUser(req.body);
+    res.json(user);
+  };
+
+  // ✅ 登录
   const signin = async (req, res) => {
     const { username, password } = req.body;
     console.log("🛂 Signin attempt:", { username, password });
@@ -35,7 +59,7 @@ export default function UserRoutes(app) {
     });
   };
 
-  // ✅ 注册（异步）
+  // ✅ 注册用户（并登录）
   const signup = async (req, res) => {
     const existing = await dao.findUserByUsername(req.body.username);
     if (existing) {
@@ -47,7 +71,7 @@ export default function UserRoutes(app) {
     res.json(newUser);
   };
 
-  // ✅ 更新用户（异步）
+  // ✅ 更新用户
   const updateUser = async (req, res) => {
     const userId = req.params.userId;
     const userUpdates = req.body;
@@ -73,7 +97,7 @@ export default function UserRoutes(app) {
     res.sendStatus(200);
   };
 
-  // ✅ 获取当前用户所选课程（异步）
+  // ✅ 获取当前用户所选课程
   const findCoursesForEnrolledUser = async (req, res) => {
     let { userId } = req.params;
     if (userId === "current") {
@@ -88,7 +112,7 @@ export default function UserRoutes(app) {
     res.json(courses);
   };
 
-  // ✅ 当前用户创建课程并自动报名（异步）
+  // ✅ 当前用户创建课程并自动报名
   const createCourse = async (req, res) => {
     const currentUser = req.session.currentUser;
     if (!currentUser) {
@@ -100,8 +124,16 @@ export default function UserRoutes(app) {
     res.json(newCourse);
   };
 
+  // ✅ 删除用户
+  const deleteUser = async (req, res) => {
+    const status = await dao.deleteUser(req.params.userId);
+    res.json(status);
+  };
+
   // ✅ 注册所有 REST API 路由
-  app.get("/api/users", findAllUsers);  // ✅ 新增
+  app.get("/api/users", findAllUsers);
+  app.get("/api/users/:userId", findUserById);
+  app.post("/api/users", createUser);           // ✅ 新增：通用用户创建接口
   app.post("/api/users/signin", signin);
   app.post("/api/users/signup", signup);
   app.put("/api/users/:userId", updateUser);
@@ -109,4 +141,5 @@ export default function UserRoutes(app) {
   app.post("/api/users/signout", signout);
   app.get("/api/users/:userId/courses", findCoursesForEnrolledUser);
   app.post("/api/users/current/courses", createCourse);
+  app.delete("/api/users/:userId", deleteUser);
 }

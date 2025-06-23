@@ -10,7 +10,7 @@ export default function KambazNavigation() {
 
   const links = [
     { label: "Dashboard", path: "/Kambaz/Dashboard", icon: AiOutlineDashboard },
-    { label: "Courses", path: "/Kambaz/Dashboard", icon: LiaBookSolid },
+    { label: "Courses", path: "/Kambaz/Courses", icon: LiaBookSolid }, // ✅ 修复路径冲突
     { label: "Calendar", path: "/Kambaz/Calendar", icon: IoCalendarOutline },
     { label: "Inbox", path: "/Kambaz/Inbox", icon: FaInbox },
     { label: "Labs", path: "/Labs", icon: LiaCogSolid },
@@ -33,7 +33,7 @@ export default function KambazNavigation() {
         <img src="/images/NEU.png" width="75px" />
       </ListGroup.Item>
 
-      {/* Account: 手动保留 */}
+      {/* Account 手动保留 */}
       <ListGroup.Item
         as={Link}
         to="/Kambaz/Account"
@@ -51,7 +51,7 @@ export default function KambazNavigation() {
       {/* 动态导航列表 */}
       {links.map((link) => (
         <ListGroup.Item
-          key={link.path}
+          key={link.path} // ✅ 确保 key 唯一
           as={Link}
           to={link.path}
           className={`text-center border-0 ${
