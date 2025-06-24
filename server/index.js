@@ -46,7 +46,7 @@ const sessionOptions = {
   saveUninitialized: false,
   cookie: {
     sameSite: "lax",    // ✅ 开发模式使用 lax 可写 cookie
-    secure: false       // ✅ 本地 http 不启用 secure
+    secure: process.env.NODE_ENV === 'production'
   }
 };
 app.use(session(sessionOptions));
