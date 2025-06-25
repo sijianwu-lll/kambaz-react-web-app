@@ -4,7 +4,7 @@ import assignmentsReducer from "./Courses/Assignments/reducer";
 import coursesReducer from "./Courses/reducer";
 import accountReducer from "./Account/reducer";
 import enrollmentsReducer from "./Courses/Enrollments/reducer";
-
+import quizzesReducer from "./Courses/Quizzes/quizzesReducer";
 
 const store = configureStore({
   reducer: {
@@ -13,6 +13,7 @@ const store = configureStore({
     coursesReducer,
     accountReducer,
     enrollmentsReducer, // ✅ 添加到 store
+    quizzesReducer,
   },
 });
 

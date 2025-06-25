@@ -4,6 +4,7 @@ import Home from "./Home";
 import Assignments from "./Assignments";
 import AssignmentEditor from "./Assignments/Editor";
 import PeopleTable from "./People/Table";
+import QuizEditor from "./Quizzes/QuizEditor";  // ✅ 新增
 import { Navigate, Route, Routes, useParams, useLocation } from "react-router-dom";
 import { FaAlignJustify } from "react-icons/fa6";
 import { useSelector } from "react-redux";
@@ -19,7 +20,6 @@ export default function Courses() {
   const course = courses.find((course: any) => course._id === cid);
   const currentPage = pathname.split("/")[4] || "Home";
 
-  // ✅ 验证用户是否已报名该课程
   const isEnrolled = enrollments.some(
     (e: any) => e.user === currentUser?._id && e.course === cid
   );
@@ -49,6 +49,7 @@ export default function Courses() {
             <Route path="Assignments" element={<Assignments />} />
             <Route path="Assignments/:aid" element={<AssignmentEditor />} />
             <Route path="People" element={<PeopleTable />} />
+            <Route path="Quizzes/:qid/Edit" element={<QuizEditor />} /> {/* ✅ 加这一行 */}
           </Routes>
         </div>
       </div>

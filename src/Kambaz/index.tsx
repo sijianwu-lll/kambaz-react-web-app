@@ -7,9 +7,10 @@ import ProtectedRoute from "./Account/ProtectedRoute";
 import Session from "./Account/Session";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-
 import * as userClient from "./Account/client";
 import * as courseClient from "./Courses/client";
+
+import QuizzesList from "./Courses/Quizzes/QuizzesList"; // ✅ 导入 Quiz List
 import "./styles.css";
 
 export default function Kambaz() {
@@ -92,6 +93,14 @@ export default function Kambaz() {
               element={
                 <ProtectedRoute>
                   <Courses />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="Courses/:cid/Quizzes"
+              element={
+                <ProtectedRoute>
+                  <QuizzesList />
                 </ProtectedRoute>
               }
             />
