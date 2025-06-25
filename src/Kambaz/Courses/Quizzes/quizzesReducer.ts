@@ -1,8 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-
 import type { Quiz } from "./types";
-
 
 const initialState: { quizzes: Quiz[] } = {
   quizzes: [],
@@ -18,8 +16,14 @@ const quizzesSlice = createSlice({
     deleteQuiz: (state, action: PayloadAction<string>) => {
       state.quizzes = state.quizzes.filter(q => q._id !== action.payload);
     },
+    togglePublish: (state, action: PayloadAction<string>) => {
+      const quiz = state.quizzes.find(q => q._id === action.payload);
+      if (quiz) {
+        quiz.published = !quiz.published;
+      }
+    },
   },
 });
 
-export const { addQuiz, deleteQuiz } = quizzesSlice.actions;
+export const { addQuiz, deleteQuiz, togglePublish } = quizzesSlice.actions;
 export default quizzesSlice.reducer;

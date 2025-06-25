@@ -5,6 +5,7 @@ import Assignments from "./Assignments";
 import AssignmentEditor from "./Assignments/Editor";
 import PeopleTable from "./People/Table";
 import QuizEditor from "./Quizzes/QuizEditor";  // ✅ 新增
+import QuizDetails from "./Quizzes/QuizDetails"; // ✅ 新增
 import { Navigate, Route, Routes, useParams, useLocation } from "react-router-dom";
 import { FaAlignJustify } from "react-icons/fa6";
 import { useSelector } from "react-redux";
@@ -50,6 +51,7 @@ export default function Courses() {
             <Route path="Assignments/:aid" element={<AssignmentEditor />} />
             <Route path="People" element={<PeopleTable />} />
             <Route path="Quizzes/:qid/Edit" element={<QuizEditor />} /> {/* ✅ 加这一行 */}
+            <Route path="Quizzes/:qid/Details" element={<QuizDetails />} />
           </Routes>
         </div>
       </div>

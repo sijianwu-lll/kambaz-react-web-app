@@ -15,17 +15,29 @@ import Kambaz from "./Kambaz/index.js";
 import UserRoutes from "./Kambaz/Database/Users/routes.js";
 import CourseRoutes from "./Kambaz/Database/Courses/routes.js";
 import ModuleRoutes from "./Kambaz/Database/Courses/Modules/routes.js";
-import EnrollmentRoutes from "./Kambaz/Database/Enrollments/routes.js";  // ✅ 新增这一行
+import EnrollmentRoutes from "./Kambaz/Database/Enrollments/routes.js";
 
 const app = express();
 
-console.log("✅ CURRENT ALLOWED ORIGIN:", process.env.NETLIFY_URL);
+const allowedOrigins = [
+  "https://cs5610bysijianwu.netlify.app", // ✅ 你的 Netlify 前端
+  "http://localhost:5173",                // ✅ 本地开发环境
+];
+
+console.log("✅ Allowed origins:", allowedOrigins);
 
 // ✅ 1. 配置 CORS
 app.use(
   cors({
     credentials: true,
-    origin: process.env.NETLIFY_URL || "http://localhost:5173",
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.warn("❌ Blocked CORS origin:", origin);
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
   })
 );
 
@@ -41,7 +53,7 @@ if (process.env.NODE_ENV !== "development") {
   sessionOptions.cookie = {
     sameSite: "none",
     secure: true,
-    domain: process.env.NODE_SERVER_DOMAIN,
+    domain: process.env.NODE_SERVER_DOMAIN, // 可选：例如 .onrender.com
   };
 }
 
@@ -56,7 +68,7 @@ Kambaz(app);
 UserRoutes(app);
 CourseRoutes(app);
 ModuleRoutes(app);
-EnrollmentRoutes(app);  // ✅ 注册 Enrollments 路由
+EnrollmentRoutes(app);
 
 // ✅ 5. 启动服务
 const PORT = process.env.PORT || 4000;
