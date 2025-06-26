@@ -280,18 +280,28 @@ export default function QuizEditor() {
 
                   {draftQuestion.options?.map((opt, i) => (
                     <div key={i} className="input-group mb-2">
-                      <span className="input-group-text">Option {String.fromCharCode(65 + i)}</span>
-                      <textarea
-                        className="form-control"
-                        value={opt}
-                        onChange={(e) => {
-                          const updated = [...draftQuestion.options!];
-                          updated[i] = e.target.value;
-                          setDraftQuestion({ ...draftQuestion, options: updated });
+                    <span className="input-group-text">Option {String.fromCharCode(65 + i)}</span>
+                    <textarea
+                      className="form-control"
+                      value={opt}
+                      onChange={(e) => {
+                      const updated = [...draftQuestion.options!];
+                      updated[i] = e.target.value;
+                      setDraftQuestion({ ...draftQuestion, options: updated });
                         }}
                       />
-                    </div>
-                  ))}
+                        <button
+                          className="btn btn-outline-danger"
+                          onClick={() => {
+                          const updated = draftQuestion.options!.filter((_, index) => index !== i);
+                          setDraftQuestion({ ...draftQuestion, options: updated });
+                          }}
+                        >
+                         🗑️
+                        </button>
+                        </div>
+                        ))}
+
 
                   <button
                     className="btn btn-outline-success btn-sm mb-3"
