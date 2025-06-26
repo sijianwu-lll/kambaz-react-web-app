@@ -9,6 +9,7 @@ export interface Question {
   options?: string[];         // ✅ For multiple choice
   correct?: number[];         // ✅ Index(es) of correct options
   answer?: boolean | string[]; // ✅ For true/false or fill-in-the-blank
+  blanks?: string[][];        // ✅ Updated: multiple answers per blank
 }
 
 export interface Quiz {

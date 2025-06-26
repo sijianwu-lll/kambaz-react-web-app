@@ -30,7 +30,6 @@ export default function QuizzesList() {
       published: false,
     };
 
-    // ✅ 只导航，不立即 dispatch，避免污染 store
     navigate(`/Kambaz/Courses/${cid}/Quizzes/${newQuiz._id}/Edit`, {
       state: { newQuiz },
     });
@@ -40,17 +39,21 @@ export default function QuizzesList() {
     (a, b) => new Date(a.availableDate).getTime() - new Date(b.availableDate).getTime()
   );
 
+  const visibleQuizzes = isFaculty
+    ? sortedQuizzes
+    : sortedQuizzes.filter((q) => q.published);
+
   return (
     <div className="p-4">
       <h2>Quizzes</h2>
 
-      {sortedQuizzes.length === 0 ? (
+      {visibleQuizzes.length === 0 ? (
         <div className="text-muted mb-3">
           No quizzes yet. {isFaculty && "Click + Quiz to create one."}
         </div>
       ) : (
         <ul className="list-group mb-3">
-          {sortedQuizzes.map((quiz: Quiz) => (
+          {visibleQuizzes.map((quiz: Quiz) => (
             <li
               key={quiz._id}
               className="list-group-item d-flex justify-content-between align-items-center"
