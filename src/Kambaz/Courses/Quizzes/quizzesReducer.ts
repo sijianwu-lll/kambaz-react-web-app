@@ -22,8 +22,20 @@ const quizzesSlice = createSlice({
         quiz.published = !quiz.published;
       }
     },
+    updateQuiz: (state, action: PayloadAction<Quiz>) => {
+      const index = state.quizzes.findIndex(q => q._id === action.payload._id);
+      if (index !== -1) {
+        state.quizzes[index] = action.payload;
+      }
+    },
   },
 });
 
-export const { addQuiz, deleteQuiz, togglePublish } = quizzesSlice.actions;
+export const {
+  addQuiz,
+  deleteQuiz,
+  togglePublish,
+  updateQuiz,
+} = quizzesSlice.actions;
+
 export default quizzesSlice.reducer;

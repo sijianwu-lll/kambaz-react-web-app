@@ -1,12 +1,27 @@
+export type QuestionType = "MULTIPLE_CHOICE" | "TRUE_FALSE" | "FILL_IN_THE_BLANK";
+
+export interface Question {
+  _id: string;
+  title: string;
+  type: QuestionType;
+  points: number;
+  question: string;
+  options?: string[];         // ✅ For multiple choice
+  correct?: number[];         // ✅ Index(es) of correct options
+  answer?: boolean | string[]; // ✅ For true/false or fill-in-the-blank
+}
+
 export interface Quiz {
-    _id: string;
-    title: string;
-    availableDate: string;
-    untilDate: string;
-    dueDate: string;
-    points: number;
-    timeLimit: number;     // 单位：分钟
-    numQuestions: number;  // 自动统计 or 手动设置
-    published: boolean;
-  }
-  
+  _id: string;
+  title: string;
+  description?: string;
+  availableDate: string;
+  untilDate: string;
+  dueDate: string;
+  points: number;
+  timeLimit: number;
+  numQuestions: number;
+  published: boolean;
+  shuffle?: boolean;
+  questions?: Question[];     // ✅ Quiz 中包含的题目列表
+}

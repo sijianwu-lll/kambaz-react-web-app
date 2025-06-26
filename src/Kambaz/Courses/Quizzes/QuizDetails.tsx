@@ -1,6 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { togglePublish } from "./quizzesReducer"; // ✅ 导入切换操作
+import { togglePublish } from "./quizzesReducer";
 import type { Quiz } from "./types";
 
 export default function QuizDetails() {
@@ -24,7 +24,7 @@ export default function QuizDetails() {
       <h2>{quiz.title}</h2>
 
       <div className="mb-2">
-        <b>Due:</b> {format(quiz.dueDate)} &nbsp; 
+        <b>Due:</b> {format(quiz.dueDate)} &nbsp;
         <b>Points:</b> {quiz.points}
       </div>
       <div className="mb-2">
@@ -45,8 +45,12 @@ export default function QuizDetails() {
           {quiz.published ? "Unpublish" : "Publish"}
         </button>
 
-        <Link to={`/Kambaz/Courses/${cid}/Quizzes/${qid}/Edit`} className="btn btn-outline-primary">
+        <Link to={`/Kambaz/Courses/${cid}/Quizzes/${qid}/Edit`} className="btn btn-outline-primary me-2">
           Edit
+        </Link>
+
+        <Link to={`/Kambaz/Courses/${cid}/Quizzes/${qid}/Preview`} className="btn btn-outline-secondary">
+          Preview
         </Link>
       </div>
     </div>

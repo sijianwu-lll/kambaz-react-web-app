@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
-import { addQuiz, deleteQuiz, togglePublish } from "./quizzesReducer";
+import { deleteQuiz, togglePublish } from "./quizzesReducer";
 import { useNavigate, Link, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import type { Quiz } from "./types";
@@ -30,11 +30,12 @@ export default function QuizzesList() {
       published: false,
     };
 
-    dispatch(addQuiz(newQuiz));
-    navigate(`/Kambaz/Courses/${cid}/Quizzes/${newQuiz._id}/Edit`);
+    // ✅ 只导航，不立即 dispatch，避免污染 store
+    navigate(`/Kambaz/Courses/${cid}/Quizzes/${newQuiz._id}/Edit`, {
+      state: { newQuiz },
+    });
   };
 
-  // ✅ 按 availableDate 升序排序
   const sortedQuizzes = [...quizzes].sort(
     (a, b) => new Date(a.availableDate).getTime() - new Date(b.availableDate).getTime()
   );
