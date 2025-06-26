@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useState } from "react";
-import type { Quiz, Question } from "./types";
+import type { Quiz } from "./types";
 
 export default function QuizPreview() {
   const { qid } = useParams();

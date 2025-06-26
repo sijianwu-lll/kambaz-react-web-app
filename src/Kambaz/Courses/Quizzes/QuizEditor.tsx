@@ -17,7 +17,7 @@ export default function QuizEditor() {
   const initialQuiz = isNew ? location.state.newQuiz : existingQuiz;
 
   const [tab, setTab] = useState<"details" | "questions">("details");
-  const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
+  const [, setEditingQuestionId] = useState<string | null>(null); 
   const [draftQuestion, setDraftQuestion] = useState<Question | null>(null);
 
   if (!initialQuiz) return <div>❌ Quiz not found</div>;
