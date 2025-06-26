@@ -27,6 +27,21 @@ export default function Signin() {
 
   return (
     <div id="wd-signin-screen" className="p-4" style={{ maxWidth: 400 }}>
+      <div className="alert alert-info mb-4">
+        <h5>Kambaz Quizzes Final Project</h5>
+        <p><strong>Full Name:</strong> Sijian Wu</p>
+        <p>
+          <strong>GitHub Repository:</strong>{" "}
+          <a
+            href="https://github.com/sijianwu-lll/kambaz-react-web-app"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            github.com/sijianwu-lll/kambaz-react-web-app
+          </a>
+        </p>
+      </div>
+
       <h2 className="mb-4">Sign in</h2>
 
       <FormControl
